@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DeskThing Notepad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@400;700&family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            font-family: 'Inter', 'Roboto', 'Noto Sans', sans-serif;
+            transition: background 0.5s ease;
+        }
+
+        body.green-theme { background: linear-gradient(to bottom right, #0f3d0f, #1a1a1a); }
+        body.red-theme { background: linear-gradient(to bottom right, #ff4444, #660000); }
+        body.yellow-theme { background: linear-gradient(to bottom right, #ffcc00, #996600); }
+        body.blue-theme { background: linear-gradient(to bottom right, #4488ff, #001144); }
+
+        .page {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 20px;
+            box-shadow: 2px 0 10px #000;
+            overflow-y: auto;
+            transition: width 0.3s ease, padding 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .main {
+            flex-grow: 1;
+            padding: 30px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(100, 100, 100, 0.2);
+            color: #e0ffe0;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+
+        .about {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #2a2a2a;
+            color: #e0ffe0;
+            margin-bottom: 10px;
+            box-shadow: inset 0 0 5px #0f0;
+            transition: box-shadow 0.3s ease;
+        }
+
+        button.save-btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .entries {
+            margin-top: 20px;
+        }
+
+        .entry {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .theme-btn {
+            background-color: #2a2a2a;
+            color: #e0ffe0;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 4px;
+        }
+
+        /* Theme-specific input + button styles */
+        body.green-theme input[type="text"] { box-shadow: 0 0 8px #0f0; }
+        body.red-theme input[type="text"] { box-shadow: 0 0 8px #ff4444; }
+        body.yellow-theme input[type="text"] { box-shadow: 0 0 8px #ffcc00; }
+        body.blue-theme input[type="text"] { box-shadow: 0 0 8px #4488ff; }
+
+        body.green-theme .save-btn { background-color: #0f0; color: #000; }
+        body.red-theme .save-btn { background-color: #ff4444; color: #000; }
+        body.yellow-theme .save-btn { background-color: #ffcc00; color: #000; }
+        body.blue-theme .save-btn { background-color: #4488ff; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="page" id="notepad-view">
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+        <div class="sidebar" id="sidebar">
+            <h2>About</h2>
+            <div class="about">
+                <p>This is a simple notepad app designed for DeskThing. Type your thoughts, ideas, or reminders in the main area. Entries are saved as downloadable files and displayed using DeskThing’s core fonts.</p>
+            </div>
+
+            <h2>Entries Examples</h2>
+            <div class="entries" id="entries">
+                <div class="entry">“Make sure to mod some kool stuff!”</div>
+                <div class="entry">“Review the speed limit!”</div>
+                <div class="entry">“Make sure to buy eggs!”</div>
+            </div>
+
+            <h2>Theme</h2>
+            <div>
+                <button class="theme-btn" onclick="setTheme('green')">Green</button>
+                <button class="theme-btn" onclick="setTheme('red')">Red</button>
+                <button class="theme-btn" onclick="setTheme('yellow')">Yellow</button>
+                <button class="theme-btn" onclick="setTheme('blue')">Blue</button>
+            </div>
+        </div>
+
+        <div class="main">
+            <h1>DeskThing Notepad</h1>
+            <label for="text">New Entry:</label>
+            <input type="text" id="text" name="text" placeholder="Type something...">
+            <button class="save-btn" onclick="saveEntry()">Save Entry</button>
+        </div>
+    </div>
+
+    <script>
+        // Load saved theme
+        const savedTheme = localStorage.getItem('deskthing-theme');
+        if (savedTheme) {
+            document.body.classList.add(`${savedTheme}-theme`);
+        }
+
+        function setTheme(color) {
+            document.body.classList.remove('green-theme', 'red-theme', 'yellow-theme', 'blue-theme');
+            document.body.classList.add(`${color}-theme`);
+            localStorage.setItem('deskthing-theme', color);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        function saveEntry() {
+            const textInput = document.getElementById('text');
+            const text = textInput.value.trim();
+            if (!text) return;
+
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'entry';
+            entryDiv.textContent = `“${text}”`;
+            document.getElementById('entries').appendChild(entryDiv);
+
+            const blob = new Blob([text], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `entry-${Date.now()}.txt`;
+            link.click();
+
+            textInput.value = '';
+        }
+    </script>
+</body>
+</html>
