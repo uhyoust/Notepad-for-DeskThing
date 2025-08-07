@@ -2,6 +2,7 @@
   "name": "Notepad for DeskThing",
   "description": "The first ever notepad for DeskThing",
   "entry": "Document2.html",
-  "icon": "Notepad-for-DeskThing icon.png",
+  "icon": "Notepad-for-DeskThing-icon.png",
   "permissions": ["localStorage", "clipboard"]
 }
+
